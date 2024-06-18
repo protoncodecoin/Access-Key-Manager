@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignUp</title>
+</head>
+<body>
+    <h1>Register. Access Key Manager</h1>
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    <form method="post" enctype="application/x-www-form-urlencoded">
+        {% csrf_token %}
+        <ul>
+            <li>Email</li>
+            <li><input type="email" name="email"></li>
+            <li>Password</li>
+            <li><input type="password" name="password1" id=""></li>
+            <li>Confirm Password</li>
+            <li><input type="password" name="password2" id=""></li>
+            <br>
+            <li><input type="submit" value="SignUp Now"></li>
+        </ul>
+        <p>Have account? <a href="{% url 'users:login' %}">Log-in here!</a></p>
+    </form>
+</body>
+</html>

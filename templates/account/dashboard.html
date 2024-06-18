@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+    <!-- <p><span><a href="{% url 'users:logout' %}">Logout </a></span></p> -->
+    <form action="{% url 'users:logout' %}" method="post">
+        {% csrf_token %}
+        <input type="submit" value="logout">
+    </form>
+    <h2>Welcome To the dashboard Back! <span style="color: skyblue;">{{ request.user.email }}</span></h2>
+    <div>
+        {% if messages %}
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    </div>
+</body>
+</html>
