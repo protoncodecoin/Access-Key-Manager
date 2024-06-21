@@ -4,6 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
+
+    <style>
+        .modal-parent {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            width: 300px;
+            height: 300px;
+            background-color: blueviolet;
+            left: 50%;
+            top: 10%;
+        }
+
+        .modal-content {
+            background-color: skyblue;
+            width: 90%;
+            height: 70%;
+            margin: 5% auto;
+            padding: 10px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .key-item {
+            border: 1px solid olivedrab;
+            width: 400px; padding: 10px;
+            border-radius: 2px;
+            margin-bottom: 4px;
+        }
+    </style>
 </head>
 <body>
     <!-- <p><span><a href="{% url 'users:logout' %}">Logout </a></span></p> -->
@@ -19,5 +61,121 @@
             {% endfor %}
         {% endif %}
     </div>
+
+    <div style="width: 300px; float: right;" id="request__key">
+        <a style="background-color: gold; text-decoration: none; display: inline-block; padding: 10px; margin: 5px;border-radius: 2px;" href="#">Request a Key</a>
+    </div>
+
+    <div class="keys-container">
+        {% if keys %}
+        {% for key in keys %}
+            <div class="key-item">
+                    <p style="color: red;">Status: {{ key.status }}</p>
+                    <p>Procurement Date: {{ key.procurement_date }}</p>
+                    <p>Expiry Date: {{ key.expiry_date }}</p>
+                    <a href="{{ key.get_absolute_url }}">Know More</a>
+                </div>
+        {% endfor %}
+    {% else %}
+        <p>You have no active key created yet</p>
+    {% endif %}
+    </div>
+    
+
+    <!-- <div class="container">
+        <div class="key-container" style="background-color: antiquewhite; border: 2px solid saddlebrown; width: 400px;">
+            <p class="key"> <span style="background-color: green; padding: 7px; color: white;">Key</span> kdsld-sdf3k4k</p>
+            <p class="procurement-date"> <span style="background-color: skyblue; padding: 7px; color: white;">Date of Procurement</span> 12th July 0000</p>
+            <p class="exp-date"> <span style="background-color: red; padding: 7px; color: white;">Expiry Date</span> 12th July</p>
+            <a href="/1/" class="detail">More</a>
+        </div>
+
+    </div> -->
+    
 </body>
+
+<div class="modal-parent">
+
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>This is the title</p>
+        <p>This is the message</p>
+    </div>
+</div>
+<script>
+
+// url to create new key
+const url = "/create/";
+
+// Modal window
+var modal = document.getElementById("modal-parent");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+    
+const requestKey = async () => {
+        console.log("In the request function")
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+            });
+            
+            if (!response.ok){
+                throw new Error(response.error)
+            }
+
+            const resData = await response.json();
+
+            if (resData.status === "error"){
+                // console.error(resData.message);
+                throw new Error(resData.message);
+            }
+
+            renderActiveKey(resData.data);
+
+        } catch (error) {
+            console.log(error)
+            
+        }
+    }
+
+
+
+const renderActiveKey = (data) => {
+    const processedHTML = `
+
+                <div class="key-item">
+                    <p style="color: red;">Status: ${data.status}</p>
+                    <p>Procurement Date: ${data.procurement_date }</p>
+                    <p>Expiry Date: ${data.expiry_date}</p>
+                    <a href="/${data.id}/">Know More</a>
+                </div>
+    `;
+
+// document.querySelector(".keys-container").insertAdjacentHTML("afterbegin", processedHTML);
+document.querySelector(".keys-container").insertAdjacentHTML("afterbegin", processedHTML)
+}
+
+
+document.querySelector("#request__key").addEventListener("click", function(){
+        requestKey();
+})
+
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
+
+</script>
 </html>

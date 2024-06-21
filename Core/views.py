@@ -13,11 +13,6 @@ from django.contrib.auth import authenticate, login, logout
 from .tokens import generate_token
 
 
-# Create your views here.
-def dashboard(request):
-    return render(request, "account/dashboard.html")
-
-
 def user_login(request):
     """
     Authenticate the user with the provided email and password and redirect the user to the dashboard
@@ -43,7 +38,7 @@ def user_login(request):
             # log in the user and redirect the user to the dashboard
             login(request, user)
             messages.success(request, "Welcome!")
-            return redirect("users:dashboard")
+            return redirect("key_manager:dashboard")
     return render(request, "registration/login.html")
 
 
