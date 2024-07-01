@@ -26,7 +26,7 @@ class AccessKey(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     key = models.UUIDField(default=uuid.uuid4, editable=False)
     status = models.CharField(max_length=7, choices=Status.choices)
-    procurement_date = models.DateTimeField(auto_now_add=True)
+    procurement_date = models.DateTimeField(default=None)
     expiry_date = models.DateTimeField(default=None)
     updated_on = models.DateTimeField(auto_now=True)
 
@@ -43,7 +43,7 @@ class AccessKey(models.Model):
                 ]
             ),
         ]
-        verbose_name_plural = "Access Key Manager"
+        verbose_name_plural = "Access Key"
 
     def __str__(self):
         return self.status
@@ -51,4 +51,8 @@ class AccessKey(models.Model):
     def save(self, *args, **kwargs):
         if self.expiry_date is None:
             self.expiry_date = timezone.now() + timedelta(days=30)
+
+        if self.procurement_date is None:
+            self.procurement_date = timezone.now()
+
         super(AccessKey, self).save(*args, **kwargs)
