@@ -1,116 +1,117 @@
 from django.shortcuts import render, redirect
-from django.views import View
-from django.contrib.auth import get_user_model
 from django.contrib import messages
-from django.conf import settings
-from django.core.mail import EmailMessage, send_mail
+from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes, force_str
-from django.contrib.auth import authenticate, login, logout
-
+from django.contrib.auth import authenticate, login
 from .tokens import generate_token
-
-
-def user_login(request):
-    """
-    Authenticate the user with the provided email and password and redirect the user to the dashboard
-    """
-    User = get_user_model()
-    if request.method == "POST":
-        email:str = request.POST.get("email")
-        password:str = request.POST.get("password")
-
-        # check if a user exist with the given email
-        if not User.objects.filter(email=email).exists():
-            messages.error(request, "Invalid credentials provided")
-            return redirect("users:login")
-        
-        # Authenticate the user with the provided email
-        user = authenticate(email=email, password=password)
-
-        if user is None:
-            # Display an error message
-            messages.error(request, "No account Found. Please register for an account.")
-            return redirect("users:login")
-        else:
-            # log in the user and redirect the user to the dashboard
-            login(request, user)
-            messages.success(request, "Welcome!")
-            return redirect("key_manager:dashboard")
-    return render(request, "registration/login.html")
-
+from django.contrib.auth import get_user_model
+from django.conf import settings
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
 
 def signup(request):
-    """
-    Create user account with the provided email and password
-    """
     if request.method == "POST":
-        email:str = request.POST.get("email")
-        password1:str = request.POST.get("password1")
-        password2:str = request.POST.get("password2")
 
-        # Instantiate the user model
-        User = get_user_model()
+        # get the user model
+        userModel = get_user_model()
 
-        # Validate email
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "Email already exists!")
-            return redirect("users:signup")
-        
-        # Validate password match
+        # Retrieve form data
+        email = request.POST.get("email")
+        password1 = request.POST.get("password1")
+        password2 = request.POST.get("password2")
+
+        # validate email
+        try:
+            existing_user = userModel.objects.get(email=email)
+
+            if existing_user.is_active:
+                messages.error(request, "Email already exists!")
+                return redirect("users:signup")
+            else:
+                existing_user.delete()
+                messages.error(
+                    request,
+                    "Account verification wasn't completed for this account.\n\nPlease re-sign up again.",
+                )
+                return redirect("users:signup")
+
+        except userModel.DoesNotExist():
+            pass
+
+        # validate password match
         if password1 != password2:
-            messages.error(request, "Passwords do not match!")
-            return redirect("users:signup")
-        
-        # validate password strength
-        if not password1.isalnum:
-            messages.error(request, "Provide a strong password")
-            return redirect("users:signup")
-        
-        # Create user object
-        newuser = User.objects.create_user(email, password1)
-        newuser.is_active = False   # Disable account until email confirmation
-        newuser.save()
+            messages.error(request, "Passwords do not match")
+            return redirect("users:signpu")
 
-        # send welcome email
-        subject = "Welcome to Micro-Focus Inc. Access Key Manager."
-        message = f"Thamk you for registering"
-        from_email = settings.EMAIL_HOST_USER
-        to_list = [newuser.email]
-        send_mail(subject, message, from_email, to_list, fail_silently=True)
+        if len(password1) < 8:
+            messages.error(request, "Password must be least 8 characters long")
 
-        # send email confirmation link
-        current_site = get_current_site(request)
-        email_subject = "Confirm Your Email Address"
-        messages2 = render_to_string('registration/email_confirmation.html', {
-            'domain': current_site.domain,
-            'uid': urlsafe_base64_encode(force_bytes(newuser.pk)),
-            'token': generate_token.make_token(newuser)
-        })
-        email = EmailMessage(
-            email_subject,
-            messages2,
-            settings.EMAIL_HOST_USER,
-            [newuser.email]
-        )
-        send_mail(email_subject, messages2, from_email, to_list, fail_silently=True)
-        messages.success(request, "Your account has been created successfully! Please check your email to confirm your email address and activate your account.")
+        # create user object
+        new_user = userModel.objects.create_user(email, password1)
+        new_user.is_active = False
+        new_user.save()
+
+        try:
+            # Send welcome email
+            subject = "Welcome to Micro Finance Inc. Access Key Manager"
+            message = "Hello there!\n\nThank you for registering to use the Access Key Manager"
+            from_email = settings.EMAIL_HOST_USER
+            to_list = [new_user.email]
+            send_mail(subject, message, from_email, to_list, fail_silently=True)
+
+            # send email confirmation link
+            current_site = get_current_site(request)
+            email_subject = "Confirm Your Email Address"
+            message2 = render_to_string(
+                "registration/email_confirmation.html",
+                {
+                    "domain": current_site.domain,
+                    "uid": urlsafe_base64_encode(force_bytes(new_user.pk)),
+                    "token": generate_token.make_token(new_user),
+                },
+            )
+            send_mail(email_subject, message2, from_email, to_list, fail_silently=False)
+
+            messages.success(
+                request,
+                "Your account has been created successfully! Please check your email to confirm your email address and activate your account.",
+            )
+        except Exception as e:
+            messages.error(request, f"Error sending email: {e}")
+            return redirect("users:login")
+
         return redirect("users:login")
     return render(request, "registration/signup.html")
 
 
+def login_user(request):
+
+    if request.method == "POST":
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+
+        user = authenticate(request, email=email, password=password)
+
+        # if user is active
+        if user:
+            if user.is_active:
+                login(request, user)
+                return redirect("key_manager:dashboard")
+
+        messages.error(request, "Invalid username or password provided")
+        return redirect("users:login")
+    return render(request, "registration/login.html")
+
+
 def activate(request, uidb64, token):
-    """
-    Activate the user's account after clicking on the verification link
-    """
-    User = get_user_model()
+    userModel = get_user_model()
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
-        myuser = User.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        myuser = userModel.objects.get(pk=uid)
+
+    except (TypeError, ValueError, userModel.DoesNotExist):
         myuser = None
 
     if myuser is not None and generate_token.check_token(myuser, token):
@@ -118,6 +119,5 @@ def activate(request, uidb64, token):
         myuser.save()
         login(request, myuser)
         messages.success(request, "Your account has been activated!")
-        return redirect('users:login')
-    else:
-        return render(request, "registration/activatation_failed.html")
+        return redirect("users:login")
+    return render(request, "registration/activation_failed.html")

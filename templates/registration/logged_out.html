@@ -1,13 +1,21 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Logged Out</title>
-</head>
-<body>
-    <h1>Logged Out</h1>
-    <p>You can <a href="{% url 'users:login' %}">Log-in again</a></p>
-    <p>{{ request.user.email }}</p>
-</body>
+    <link rel="stylesheet" href="{% static 'css/logged_out.css' %}">
+  </head>
+  <body>
+    <div class="signup">
+      <h2 class="logo">Access Key Manager</h2>
+
+      <h2 class="reset-password-done">Log Out</h2>
+      <p class="logged-out">
+        Logged Out
+        <a href="{% url 'users:login' %}">Log in</a>
+      </p>
+    </div>
+  </body>
 </html>

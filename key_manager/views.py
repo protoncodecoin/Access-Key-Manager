@@ -1,55 +1,100 @@
-from django.views import generic
-from django.http import JsonResponse
+from django.views import generic, View
+from django.shortcuts import redirect
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.contrib import messages
+from django.utils import timezone
 
+from rest_framework.views import APIView
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework import authentication, permissions
 
-from .models import KeyManager
+from .models import AccessKey
+from .serializers import AccessKeySerializer
+
 # Create your views here.
-
-
-# Create your views here.
-@login_required
-@require_POST
-@csrf_exempt
-def create_key(request):
-    user = request.user
-    key_obj = KeyManager.objects.filter(status=KeyManager.Status.ACTIVE, user=request.user).exists()
-    if not key_obj:
-        new_key = KeyManager.objects.create(user=user, status=KeyManager.Status.ACTIVE)
-        json_key = {
-            "id": new_key.id,
-            "key": new_key.key,
-            "status": new_key.status,
-            "procurement_date": new_key.procurement_date,
-            "expiry_date": new_key.expiry_date,
-        }
-        return JsonResponse({"status": "success", "data": json_key})
-    return JsonResponse({"status": "error", "message": "An active key already exist"})
-
 
 
 class OwnerMixin:
+    """
+    filtered based on the user
+    """
+
     def get_queryset(self):
-        qs = super().get_queryset()
-        return qs.filter(user=self.request.user)
-    
+        # check the status of the latest key provided
+        latest_key = super().get_queryset().filter(user=self.request.user).first()
+
+        # check if the latest key exists and if it has expired
+        if latest_key and latest_key.expiry_date < timezone.now():
+            # update the status to expired
+            latest_key.status = AccessKey.Status.EXPIRED
+            latest_key.save()
+
+        # Retrieve all keys for the user
+        qs = super().get_queryset().filter(user=self.request.user)
+
+        return qs
+
 
 class MangeKeysListView(OwnerMixin, LoginRequiredMixin, generic.ListView):
     """
     List keys related to the requested user
     """
-    model = KeyManager
-    context_object_name = "keys" 
+
+    paginate_by = 3
+    model = AccessKey
+    context_object_name = "keys"
     template_name = "account/dashboard.html"
 
 
-class DetailKeyView(OwnerMixin,LoginRequiredMixin, generic.DetailView):
+# List of drecorators to decorate the CreateNewKey class
+decorators = [require_POST, login_required]
+
+
+@method_decorator(decorators, name="dispatch")
+class CreateNewKey(View):
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        key_obj = AccessKey.objects.filter(
+            status=AccessKey.Status.ACTIVE, user=request.user
+        ).exists()
+        if not key_obj:
+            AccessKey.objects.create(user=user, status=AccessKey.Status.ACTIVE)
+            messages.success(request, "New key was created successfully")
+            return redirect("key_manager:dashboard")
+
+        messages.error(request, "There is already an active key")
+        return redirect("key_manager:dashboard")
+
+
+class CheckKeyStatus(APIView):
     """
-    Get detailed information on the key with the specified pk/id
+    View to check and return key based on the status.
     """
-    model = KeyManager
-    context_object_name = "key"
-    template_name = "account/details.html"
+
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request, email, format=None):
+        user_model = get_user_model()
+        try:
+            user = user_model.objects.get(email=email)
+            active_key = AccessKey.objects.filter(
+                user=user, status=AccessKey.Status.ACTIVE
+            ).first()
+            if active_key:
+                serializer = AccessKeySerializer(active_key)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(
+                    {"error": "No active Key found"}, status=status.HTTP_404_NOT_FOUND
+                )
+        except user_model.DoesNotExist:
+            return Response(
+                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )

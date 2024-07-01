@@ -1,6 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'css/activation_failed.css' %}">
+    <title>Logged Out</title>
+  </head>
+  <body>
+    <div>
+      <h2 class="logo">Access Key Manager</h2>
 
-{% autoescape off %}
+      {% autoescape off %}
+      <p>Account activation failed</p>
+      <a href="{% url 'users:signup' %}">Go back</a>
 
-<a href="{% url 'users:signup' %}">Go back to login</a>
-
-{% endautoescape %}
+      {% endautoescape %}
+    </div>
+  </body>
+</html>

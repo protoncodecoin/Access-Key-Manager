@@ -1,0 +1,237 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: rgb(255, 247, 236);
+}
+
+main {
+  margin-top: 165px;
+
+}
+
+/* Navigation */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(7);
+  background-color: rgba(255, 255, 255, 0.757);
+  box-shadow: 2px 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.logo {
+  padding: 10px;
+  background-color: rgb(240, 240, 240);
+  text-align: center;
+}
+
+.logo a {
+  text-decoration: none;
+  font-size: 20px;
+  color: black;
+  text-transform: uppercase;
+  font-weight: bolder;
+}
+
+.nav-items {
+  display: flex;
+  justify-content: space-between;
+}
+
+.nav-items li {
+  padding: 15px;
+  list-style-type: none;
+}
+
+.username {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.logout {
+  border: none;
+  padding: 7px;
+  margin-right: 5px;
+  font-size: 15px;
+  transition: all 0.5s;
+  cursor: pointer;
+  border-radius: 2px;
+  background-color: rgb(221, 5, 5);
+  color: white;
+}
+
+.logout:hover {
+  background-color: rgb(139, 139, 139);
+  color: #fff;
+}
+
+.request-new-key {
+  margin-bottom: 10px;
+    padding: 0 0 0 15px;
+}
+
+/* GENERIC CLASSES */
+.flex-layout {
+  display: flex;
+  padding-bottom: 10px;
+}
+
+.active {
+  border-left: 5px solid green;
+}
+
+.active-txt-color {
+  color: green;
+  font-weight: bold;
+}
+
+.revoked {
+  border-left: 5px solid goldenrod;
+}
+
+.revoked-txt-color {
+  color: goldenrod;
+  font-weight: bold;
+}
+
+.expired {
+  border-left: 5px solid red;
+}
+
+.expired-txt-color {
+  color: red;
+  font-weight: bold;
+}
+
+/* KEY CARDS */
+.key-item {
+  width: 97%;
+  backdrop-filter: (10px);
+  -webkit-backdrop-filter: blur(7px);
+  background-color: rgba(255, 255, 255, 0.862);
+  margin: 10px auto 20px auto;
+  padding: 10px;
+  box-shadow: 2px 1px 5px 2px rgba(0, 0, 0, 0.2);
+}
+
+.key-label {
+  width: 30%;
+  font-weight: bolder;
+}
+
+/* Pagination */
+.pagination-section {
+  position: relative;
+  width: 100px;
+  margin: 50px auto;
+}
+
+.pagination-section a {
+  color: black;
+  padding: 7px 7px;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: background-color 0.3s;
+}
+
+.pagination-section a:hover:not(.pg-active) {
+  background-color: rgb(224, 179, 122);
+  color: black;
+}
+
+.pagination-section a.pg-active {
+  color: white;
+  background-color: rgb(255, 158, 31);
+}
+
+.page-btn {
+  border: 1px solid rgb(102, 58, 1);
+}
+
+.no-keys-container {
+  width: 70%;
+  margin: 0 auto;
+  background-color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.no-keys-msg {
+  font-weight: bold;
+  color: red;
+  margin-bottom: 10px;
+}
+
+.request-key{
+  border: none;
+  padding: 10px;
+  background-color: green;
+  border-radius: 2px;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color .3s;
+}
+
+.request-key:hover {
+  background-color: rgb(10, 203, 10);
+}
+
+.error {
+  background-color: rgba(255, 0, 0, 0.881);
+  backdrop-filter: blur(10px);
+  color: white;
+}
+
+.success {
+  background-color: rgba(0, 128, 0, 0.911);
+    backdrop-filter: blur(10px);
+  color: white;
+}
+
+.alert {
+  padding: 15px;
+  width: 70%;
+  margin: 0 auto;
+}
+
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.closebtn:hover {
+  color: black;
+}
+
+/* MEDIA QUERY */
+@media only screen and (max-width: 768px){
+  .keys-container {
+    width: 90%;
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: 1024px) {
+
+  main {
+    margin-top: 190px;
+  }
+
+  .keys-container {
+    width: 75%;
+    margin: 0 auto;
+  }
+}
