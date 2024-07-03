@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from key_manager.models import AccessKey
 import uuid

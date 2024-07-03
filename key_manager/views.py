@@ -11,10 +11,11 @@ from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework import authentication, permissions
+from rest_framework import authentication
 
 from .models import AccessKey
 from .serializers import AccessKeySerializer
+from .permissions import MicroFocusAdminAPIPermission
 
 # Create your views here.
 
@@ -48,7 +49,7 @@ class MangeKeysListView(OwnerMixin, LoginRequiredMixin, generic.ListView):
     paginate_by = 3
     model = AccessKey
     context_object_name = "keys"
-    template_name = "account/dashboard.html"
+    template_name = "key_manager/dashboard.html"
 
 
 # List of drecorators to decorate the CreateNewKey class
@@ -78,7 +79,7 @@ class CheckKeyStatus(APIView):
     """
 
     authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [MicroFocusAdminAPIPermission]
 
     def get(self, request, email, format=None):
         user_model = get_user_model()
@@ -88,12 +89,21 @@ class CheckKeyStatus(APIView):
                 user=user, status=AccessKey.Status.ACTIVE
             ).first()
             if active_key:
-                serializer = AccessKeySerializer(active_key)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            else:
-                return Response(
-                    {"error": "No active Key found"}, status=status.HTTP_404_NOT_FOUND
-                )
+                if not active_key.expiry_date < timezone.now():
+                    serializer = AccessKeySerializer(active_key)
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+                else:
+                    # update the status to expired
+                    active_key.status = AccessKey.Status.EXPIRED
+                    active_key.save()
+                    return Response(
+                        {"error": "No active Key found"},
+                        status=status.HTTP_404_NOT_FOUND,
+                    )
+
+            return Response(
+                {"error": "No active Key found"}, status=status.HTTP_404_NOT_FOUND
+            )
         except user_model.DoesNotExist:
             return Response(
                 {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND

@@ -5,17 +5,18 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.password_validation import validate_password
 from .tokens import generate_token
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.conf import settings
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.core.exceptions import ValidationError
+
+from .models import CustomUser
 
 
 def signup(request):
     if request.method == "POST":
-
-        # get the user model
-        userModel = get_user_model()
 
         # Retrieve form data
         email = request.POST.get("email")
@@ -24,7 +25,7 @@ def signup(request):
 
         # validate email
         try:
-            existing_user = userModel.objects.get(email=email)
+            existing_user = CustomUser.objects.get(email=email)
 
             if existing_user.is_active:
                 messages.error(request, "Email already exists!")
@@ -37,20 +38,25 @@ def signup(request):
                 )
                 return redirect("users:signup")
 
-        except userModel.DoesNotExist():
+        except CustomUser.DoesNotExist:
             pass
 
-        # validate password match
+        # validate password
         if password1 != password2:
-            messages.error(request, "Passwords do not match")
-            return redirect("users:signpu")
+            messages.error(request, "Passwords do not matchbb")
+            return redirect("users:signup")
 
-        if len(password1) < 8:
-            messages.error(request, "Password must be least 8 characters long")
+        try:
+            validate_password(password1)
+        except ValidationError as e:
+            messages.error(request, str(e))
+            return redirect("users:signup")
 
         # create user object
-        new_user = userModel.objects.create_user(email, password1)
+        user_group = Group.objects.get(name="Personnel")
+        new_user = CustomUser.objects.create_user(email, password1)
         new_user.is_active = False
+        new_user.groups.add(user_group)
         new_user.save()
 
         try:
@@ -106,12 +112,11 @@ def login_user(request):
 
 
 def activate(request, uidb64, token):
-    userModel = get_user_model()
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
-        myuser = userModel.objects.get(pk=uid)
+        myuser = CustomUser.objects.get(pk=uid)
 
-    except (TypeError, ValueError, userModel.DoesNotExist):
+    except (TypeError, ValueError, CustomUser.DoesNotExist):
         myuser = None
 
     if myuser is not None and generate_token.check_token(myuser, token):
