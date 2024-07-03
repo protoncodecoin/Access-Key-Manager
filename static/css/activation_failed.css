@@ -17,5 +17,6 @@ a {
 }
 
 a:hover {
-  color: antiquewhite;
+  color: black;
+  text-decoration: underline;
 }
