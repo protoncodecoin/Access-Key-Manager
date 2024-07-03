@@ -85,9 +85,7 @@ class CheckKeyStatus(APIView):
         user_model = get_user_model()
         try:
             user = user_model.objects.get(email=email)
-            active_key = AccessKey.objects.filter(
-                user=user, status=AccessKey.Status.ACTIVE
-            ).first()
+            active_key = AccessKey.activeKeys.filter(user=user).first()
             if active_key:
                 if not active_key.expiry_date < timezone.now():
                     serializer = AccessKeySerializer(active_key)
