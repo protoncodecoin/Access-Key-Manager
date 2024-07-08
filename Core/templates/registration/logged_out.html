@@ -4,18 +4,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="{% static 'css/activation_failed.css' %}">
     <title>Logged Out</title>
+    <link rel="stylesheet" href="{% static 'css/baseauth.css' %}">
   </head>
   <body>
-    <div>
+    <div class="log-out">
       <h2 class="logo">Access Key Manager</h2>
 
-      {% autoescape off %}
-      <p>Account activation failed</p>
-      <a href="{% url 'users:signup' %}">Go back</a>
-
-      {% endautoescape %}
+      <h2 class="logged-out-title">Log Out</h2>
+      <br>
+      <p class="logged-out">
+        Logged Out
+        <a href="{% url 'login' %}">Log in</a>
+      </p>
     </div>
   </body>
 </html>

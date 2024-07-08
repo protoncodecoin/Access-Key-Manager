@@ -6,6 +6,7 @@ class CustomUserManager(BaseUserManager):
     """
     Custom user manager to make email the unique identifier for authentication
     """
+
     def create_user(self, email, password, **extra_fields):
         if not email:
             raise ValueError(_("Email must be set"))
@@ -14,7 +15,7 @@ class CustomUserManager(BaseUserManager):
         user.set_password(password)
         user.save()
         return user
-    
+
     def create_superuser(self, email, password, **extra_fields):
         """
         Create and save a Superuser with email and password
@@ -22,9 +23,12 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
+        extra_fields.setdefault("is_micro_focus_admin", True)
 
         if extra_fields.get("is_staff") is not True:
             raise ValueError(_("Superuser must have is_staff=True"))
         if extra_fields.get("is_superuser") is not True:
             raise ValueError(_("Superuser must have is_superuser=True"))
+        if extra_fields.get("is_micro_focus_admin") is not True:
+            raise ValueError(_("Superuser must have is_micro_focus_admin=True"))
         return self.create_user(email, password, **extra_fields)

@@ -11,6 +11,7 @@ from .manager import CustomUserManager
 class CustomUser(AbstractUser):
     username = None
     email = models.EmailField(_("email_address"), unique=True)
+    is_micro_focus_admin = models.BooleanField(default=False)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

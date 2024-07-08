@@ -17,9 +17,7 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
-from django.contrib.auth import views as auth_views
+
 
 admin.site.site_title = "Micro Focus Inc"
 admin.site.site_header = "Micro Focus Inc."
@@ -28,28 +26,5 @@ admin.site.index_title = "Key Manager Administration"
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("key_manager.urls", namespace="key_manager")),
-    path("accounts/", include("Core.urls", namespace="users")),
-    # password reset urls
-    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
-    path(
-        "password-reset/", auth_views.PasswordResetView.as_view(), name="password_reset"
-    ),
-    path(
-        "password-reset/done/",
-        auth_views.PasswordResetDoneView.as_view(),
-        name="password_reset_done",
-    ),
-    path(
-        "password-reset-confirm/<uidb64>/<token>/",
-        auth_views.PasswordResetConfirmView.as_view(),
-        name="password_reset_confirm",
-    ),
-    path(
-        "password-reset-complete/",
-        auth_views.PasswordResetCompleteView.as_view(),
-        name="password_reset_complete",
-    ),
+    path("accounts/", include("Core.urls")),
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

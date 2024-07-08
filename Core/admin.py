@@ -15,13 +15,27 @@ class CustomUserAdmin(UserAdmin):
         "email",
         "is_staff",
         "is_active",
+        "is_micro_focus_admin",
     )
-    list_filter = ("email", "is_staff", "is_active")
+    list_filter = (
+        "email",
+        "is_staff",
+        "is_active",
+        "is_micro_focus_admin",
+    )
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (
             "Permissions",
-            {"fields": ("is_staff", "is_active", "groups", "user_permissions")},
+            {
+                "fields": (
+                    "is_staff",
+                    "is_active",
+                    "is_micro_focus_admin",
+                    "groups",
+                    "user_permissions",
+                )
+            },
         ),
     )
     add_fieldsets = (
@@ -35,6 +49,7 @@ class CustomUserAdmin(UserAdmin):
                     "password2",
                     "is_staff",
                     "is_active",
+                    "is_micro_focus_admin",
                     "groups",
                     "user_permissions",
                 ),

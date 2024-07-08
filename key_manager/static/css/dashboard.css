@@ -5,12 +5,11 @@
 }
 
 body {
-  background-color: rgb(255, 247, 236);
+  /* background-color: rgb(255, 247, 236); */
 }
 
 main {
   margin-top: 165px;
-
 }
 
 /* Navigation */
@@ -74,7 +73,7 @@ header {
 
 .request-new-key {
   margin-bottom: 10px;
-    padding: 0 0 0 15px;
+  padding: 0 0 0 15px;
 }
 
 /* GENERIC CLASSES */
@@ -115,7 +114,7 @@ header {
   width: 97%;
   backdrop-filter: (10px);
   -webkit-backdrop-filter: blur(7px);
-  background-color: rgba(255, 255, 255, 0.862);
+  background-color: rgba(255, 247, 236, 0.862);
   margin: 10px auto 20px auto;
   padding: 10px;
   box-shadow: 2px 1px 5px 2px rgba(0, 0, 0, 0.2);
@@ -169,14 +168,14 @@ header {
   margin-bottom: 10px;
 }
 
-.request-key{
+.request-key {
   border: none;
   padding: 10px;
   background-color: green;
   border-radius: 2px;
   color: #fff;
   cursor: pointer;
-  transition: background-color .3s;
+  transition: background-color 0.3s;
 }
 
 .request-key:hover {
@@ -191,7 +190,7 @@ header {
 
 .success {
   background-color: rgba(0, 128, 0, 0.911);
-    backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   color: white;
 }
 
@@ -217,7 +216,7 @@ header {
 }
 
 /* MEDIA QUERY */
-@media only screen and (max-width: 768px){
+@media only screen and (max-width: 768px) {
   .keys-container {
     width: 90%;
     margin: 0 auto;
@@ -225,7 +224,6 @@ header {
 }
 
 @media (min-width: 1024px) {
-
   main {
     margin-top: 190px;
   }

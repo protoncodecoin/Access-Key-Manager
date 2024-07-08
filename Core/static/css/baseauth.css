@@ -1,0 +1,238 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: rgb(255, 255, 255);
+}
+
+form {
+  width: 70%;
+  margin: 10px auto;
+}
+
+label {
+  font-size: 17px;
+  font-weight: bold;
+}
+
+input {
+  margin-bottom: 15px;
+  outline: none;
+  padding: 7px;
+}
+
+input[type="email"] {
+  border: 2px solid rgb(255, 188, 101);
+  width: 95%;
+  height: 30px;
+}
+
+input[type="password"] {
+  border: 2px solid rgb(255, 188, 101);
+  width: 95%;
+  height: 30px;
+}
+
+input[type="submit"] {
+  border: none;
+  font-weight: bold;
+  font-size: 15px;
+  background-color: rgb(235, 164, 70);
+  backdrop-filter: blur(10px);
+  padding: 15px 20px;
+  cursor: pointer;
+  box-shadow: 3px 3px 4px 1px rgba(0, 0, 0, 0.2);
+  transition: all 0.6s;
+}
+
+input[type="submit"]:hover {
+  background-color: rgb(247, 204, 148);
+  box-shadow: 2px 2px 2px -1px rgba(0, 0, 0, 0.2);
+}
+
+.signup,
+.login {
+  text-align: center;
+}
+
+.welcome-msg {
+  text-align: center;
+  margin: 90px 0 20px 0;
+  color: rgb(215, 123, 2);
+}
+
+.register {
+  text-align: center;
+}
+
+.signup a {
+  text-decoration: none;
+  color: rgb(215, 123, 2);
+}
+
+.forgot-password {
+  text-align: right;
+  margin-right: 20px;
+}
+
+span a {
+  color: rgb(215, 123, 2);
+}
+
+span a:hover {
+  color: black;
+}
+
+a {
+  color: rgb(215, 123, 2);
+}
+
+a:hover {
+  color: black;
+}
+
+/* ALERT */
+.error {
+  background-color: rgba(255, 0, 0, 0.881);
+  backdrop-filter: blur(10px);
+  color: white;
+}
+
+.success {
+  background-color: rgba(0, 128, 0, 0.911);
+  backdrop-filter: blur(10px);
+  color: white;
+}
+
+.alert {
+  padding: 15px;
+  width: 50%;
+  margin: 0 auto;
+}
+
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.closebtn:hover {
+  color: black;
+}
+
+/* password reset form */
+
+.logo {
+  text-align: center;
+  margin: 90px 0 20px 0;
+  color: rgb(215, 123, 2);
+}
+
+.password-reset {
+  text-align: center;
+}
+
+.signup a {
+  text-decoration: none;
+  color: rgb(215, 123, 2);
+}
+
+.signup a:hover {
+  text-decoration: underline;
+}
+
+/* password reset done */
+.psd-reset-msg {
+  margin: 100px auto 5px auto;
+  font-size: 20px;
+  width: 60%;
+  text-align: center;
+}
+
+.logo {
+  text-align: center;
+  margin: 90px 0 5px 0;
+  color: rgb(215, 123, 2);
+}
+
+.reset-password-done {
+  text-align: center;
+}
+
+/* password reset confirm */
+.password-reset-title,
+.log-out,
+.logged-out-title,
+.password-reset-confirm,
+.psw-reset-complete,
+.container {
+  text-align: center;
+}
+
+/* log out */
+.logged-out {
+  font-size: 20px;
+}
+
+.logged-out-title {
+  margin-bottom: 5px;
+}
+
+.prc-btn {
+  text-decoration: none;
+  color: rgb(235, 164, 70);
+  border: none;
+  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.921);
+  backdrop-filter: blur(10px);
+  padding: 10px 15px;
+  cursor: pointer;
+  box-shadow: 3px 3px 4px 1px rgba(0, 0, 0, 0.2);
+  transition: all 0.6s;
+}
+
+.prc-btn:hover {
+  background-color: rgb(235, 164, 70);
+  color: white;
+  box-shadow: 2px 2px 2px -1px rgba(0, 0, 0, 0.2);
+}
+
+/* password reset complete */
+.logo {
+  margin-bottom: 10px;
+}
+
+.password-reset-confirm {
+  margin-bottom: 20px;
+}
+.psw-reset-complete {
+  margin-bottom: 100px;
+}
+
+/* Failed verifcaiton */
+.failed-verification-msg {
+  text-align: center;
+  margin-top: 20px;
+  padding: 50px;
+  font-size: 20px;
+}
+
+@media (max-width: 768px) {
+  form {
+    width: 60%;
+  }
+}
+
+@media (min-width: 1024px) {
+  form {
+    width: 40%;
+  }
+}

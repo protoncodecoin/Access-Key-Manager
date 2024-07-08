@@ -29,28 +29,28 @@ def signup(request):
 
             if existing_user.is_active:
                 messages.error(request, "Email already exists!")
-                return redirect("users:signup")
+                return redirect("signup")
             else:
                 existing_user.delete()
                 messages.error(
                     request,
                     "Account verification wasn't completed for this account.\n\nPlease re-sign up again.",
                 )
-                return redirect("users:signup")
+                return redirect("signup")
 
         except CustomUser.DoesNotExist:
             pass
 
         # validate password
         if password1 != password2:
-            messages.error(request, "Passwords do not matchbb")
-            return redirect("users:signup")
+            messages.error(request, "Passwords do not match")
+            return redirect("signup")
 
         try:
             validate_password(password1)
         except ValidationError as e:
             messages.error(request, str(e))
-            return redirect("users:signup")
+            return redirect("signup")
 
         # create user object
         user_group = Group.objects.get(name="Personnel")
@@ -86,9 +86,9 @@ def signup(request):
             )
         except Exception as e:
             messages.error(request, f"Error sending email: {e}")
-            return redirect("users:login")
+            return redirect("login")
 
-        return redirect("users:login")
+        return redirect("login")
     return render(request, "registration/signup.html")
 
 
@@ -107,7 +107,7 @@ def login_user(request):
                 return redirect("key_manager:dashboard")
 
         messages.error(request, "Invalid username or password provided")
-        return redirect("users:login")
+        return redirect("login")
     return render(request, "registration/login.html")
 
 
@@ -124,5 +124,5 @@ def activate(request, uidb64, token):
         myuser.save()
         login(request, myuser)
         messages.success(request, "Your account has been activated!")
-        return redirect("users:login")
+        return redirect("login")
     return render(request, "registration/activation_failed.html")

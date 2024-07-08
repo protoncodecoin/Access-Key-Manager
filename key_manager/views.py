@@ -1,3 +1,4 @@
+import re
 from django.views import generic, View
 from django.shortcuts import redirect
 from django.contrib.auth import get_user_model
@@ -12,12 +13,25 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework import authentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 
 from .models import AccessKey
 from .serializers import AccessKeySerializer
 from .permissions import MicroFocusAdminAPIPermission
 
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+from .serializers import MicroFocusObtainPairSerializer
+
+
 # Create your views here.
+
+
+class MicroFocusTokenObtainPairView(TokenObtainPairView):
+    """Provide token to users"""
+
+    serializer_class = MicroFocusObtainPairSerializer
 
 
 class OwnerMixin:
@@ -78,31 +92,36 @@ class CheckKeyStatus(APIView):
     View to check and return key based on the status.
     """
 
-    authentication_classes = [authentication.SessionAuthentication]
+    authentication_classes = [
+        authentication.SessionAuthentication,
+        JWTAuthentication,
+    ]
     permission_classes = [MicroFocusAdminAPIPermission]
 
     def get(self, request, email, format=None):
         user_model = get_user_model()
-        try:
-            user = user_model.objects.get(email=email)
-            active_key = AccessKey.activeKeys.filter(user=user).first()
-            if active_key:
-                if not active_key.expiry_date < timezone.now():
-                    serializer = AccessKeySerializer(active_key)
-                    return Response(serializer.data, status=status.HTTP_200_OK)
-                else:
-                    # update the status to expired
-                    active_key.status = AccessKey.Status.EXPIRED
-                    active_key.save()
-                    return Response(
-                        {"error": "No active Key found"},
-                        status=status.HTTP_404_NOT_FOUND,
-                    )
+        email_pattern = r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+        if re.match(email_pattern, email):
+            try:
+                user = user_model.objects.get(email=email)
+                active_key = AccessKey.activeKeys.filter(user=user).first()
+                if active_key:
+                    if active_key.expiry_date >= timezone.now():
+                        serializer = AccessKeySerializer(active_key)
+                        return Response(serializer.data, status=status.HTTP_200_OK)
+                    else:
+                        # update the status to expired
+                        active_key.status = AccessKey.Status.EXPIRED
+                        active_key.save()
+                return Response(
+                    {"error": "No active Key found"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
 
-            return Response(
-                {"error": "No active Key found"}, status=status.HTTP_404_NOT_FOUND
-            )
-        except user_model.DoesNotExist:
-            return Response(
-                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+            except user_model.DoesNotExist:
+                return Response(
+                    {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+                )
+        return Response(
+            {"error": "invalid email proivided"}, status=status.HTTP_400_BAD_REQUEST
+        )
