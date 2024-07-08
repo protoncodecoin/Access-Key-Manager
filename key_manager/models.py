@@ -23,7 +23,7 @@ class AccessKey(models.Model):
         EXPIRED = "expired", "Expired"
         REVOKED = "revoked", "Revoked"
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="keys")
     key = models.UUIDField(default=uuid.uuid4, editable=False)
     status = models.CharField(max_length=7, choices=Status.choices)
     procurement_date = models.DateTimeField(default=None)
