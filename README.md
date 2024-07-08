@@ -36,6 +36,8 @@ key manage
 1. <b>Django</b>: Web framework for building the application
 2. <b>PostgreSQL</b>: Database for storing user and key information
 
+## DEPLOYED SITE: https://asanteprince.pythonanywhere.com/
+
 ## INSTALLATION
 1. git clone the repository:
     ```bash
