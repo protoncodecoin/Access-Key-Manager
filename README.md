@@ -37,9 +37,9 @@ key manage
 2. <b>PostgreSQL</b>: Database for storing user and key information
 
 ## INSTALLATION
-git clone the repository:
+1. git clone the repository:
     ```bash
-    git clone https://github.com/yourusername/access-key-manager.git
+    git clone https://github.com/protoncodecoin/Access-Key-Manager.git
     cd access-key-manager
     ```
 
